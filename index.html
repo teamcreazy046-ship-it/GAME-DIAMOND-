@@ -1,0 +1,208 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GAME DIAMOND | Recargas de diamantes</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#120a2a;--bg2:#1b1040;--line:#35286b;--tx:#f3f0ff;--mu:#a99fd6;--c:#5ee7ff;--g:#ffcf4d;--ok:#3ddc97}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);line-height:1.5}
+h1,h2{font-family:Sora,sans-serif;line-height:1.1}
+.w{max-width:1000px;margin:0 auto;padding:0 18px}
+header{border-bottom:1px solid var(--line);background:rgba(18,10,42,.9);position:sticky;top:0;z-index:5}
+.nav{display:flex;justify-content:space-between;align-items:center;height:60px}
+.logo{font:800 1.1rem Sora;display:flex;gap:8px;align-items:center}.logo svg{width:24px;height:24px}
+.btn{border:0;cursor:pointer;font:700 .95rem 'DM Sans';padding:11px 20px;border-radius:12px;background:var(--c);color:#07112b;display:inline-block;text-decoration:none}
+.btn:hover{filter:brightness(1.1)}.btn:disabled{opacity:.6;cursor:wait}
+.hero{padding:44px 0 30px;display:grid;grid-template-columns:1.2fr .8fr;gap:28px;align-items:center}
+.hero h1{font-size:clamp(2rem,5vw,3.2rem);font-weight:800}
+.hero p{color:var(--mu);margin:14px 0 22px;max-width:44ch}
+.live{background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:14px}
+.lh{display:flex;justify-content:space-between;font:700 .95rem Sora;margin-bottom:10px}
+.lh span{font:500 .78rem 'DM Sans';color:var(--ok)}
+#feed{display:flex;flex-direction:column;gap:8px;min-height:104px}
+.it{display:flex;gap:10px;align-items:center;background:#241552;border:1px solid var(--line);border-radius:12px;padding:8px 10px;animation:f .4s}
+@keyframes f{from{opacity:0;transform:translateY(-8px)}}
+.av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--c),#8b7bff);color:#07112b;font-weight:800;display:grid;place-items:center;flex:none}
+.t{flex:1;min-width:0}.t b{display:block;font-size:.88rem}.t small{color:var(--mu);font-size:.76rem}
+.ok{background:var(--ok);color:#06301b;font:700 .7rem 'DM Sans';padding:3px 8px;border-radius:99px}
+.empty{color:var(--mu);font-size:.88rem;text-align:center;padding:30px 8px;border:1px dashed var(--line);border-radius:12px}
+section{padding:26px 0 46px}h2{font-size:1.7rem;margin-bottom:16px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.tab{background:var(--bg2);border:1px solid var(--line);color:var(--tx);padding:9px 16px;border-radius:99px;cursor:pointer;font:600 .92rem 'DM Sans'}
+.tab.on{background:var(--c);color:#07112b;border-color:var(--c)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:14px}
+.pk{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px}
+.pk:hover{border-color:var(--c)}.pk b{font:800 1.05rem Sora}.pk .p{color:var(--g);font-weight:700;font-size:1.1rem}
+dialog{margin:auto;border:1px solid var(--line);border-radius:18px;background:var(--bg2);color:var(--tx);padding:22px;width:min(92vw,400px)}
+dialog::backdrop{background:rgba(5,2,15,.7)}
+dialog h3{font:800 1.2rem Sora;margin-bottom:4px}dialog .s{color:var(--g);font-weight:700;margin-bottom:6px}
+label{display:block;font-size:.85rem;color:var(--mu);margin:10px 0 4px}
+input,select{width:100%;padding:11px;border-radius:10px;border:1px solid var(--line);background:#120a2a;color:var(--tx);font:inherit}
+.acts{display:flex;gap:8px;margin-top:18px}.acts .btn{flex:1}.g{background:transparent;color:var(--tx);border:1px solid var(--line)}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.st{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:18px}
+.st i{font-style:normal;width:30px;height:30px;border-radius:50%;background:var(--c);color:#07112b;font-weight:800;display:grid;place-items:center;margin-bottom:10px}
+.st p{color:var(--mu);font-size:.9rem}
+footer{border-top:1px solid var(--line);padding:24px 0;color:var(--mu);font-size:.88rem}
+@media(max-width:760px){.hero,.steps{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+
+/* ===== Panel de administración (solo en /#admin) ===== */
+body.isadm header,body.isadm main,body.isadm footer{display:none}
+#adm{padding:16px}#adm .w{max-width:820px}
+#adm h1{font:700 1.25rem system-ui;margin-bottom:12px}
+#adm .top{display:flex;justify-content:space-between;align-items:center}
+#adm .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+#adm button{border:1px solid var(--line);background:var(--bg2);color:var(--tx);padding:9px 14px;border-radius:10px;cursor:pointer;font:600 .88rem system-ui}
+#adm button.on,#adm button.pri{background:var(--c);color:#07112b;border-color:var(--c)}
+#adm .sm{padding:6px 10px}#adm .del{color:#ff8a8a;padding:6px 10px}
+#adm .box{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px}
+#adm .row{display:flex;gap:6px;margin:6px 0;align-items:center}
+#adm input,#adm select{flex:1;min-width:0;padding:9px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--tx);font:inherit}
+#adm input[type=checkbox]{flex:none;width:18px;height:18px}
+#adm .mut{color:var(--mu);font-size:.85rem}
+#adm label{display:block;color:var(--mu);font-size:.82rem;margin:10px 0 0}
+#adm .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+#adm .stat{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px}
+#adm .stat b{display:block;font-size:1.4rem}
+</style></head><body>
+<header><div class="w nav"><div class="logo"><svg viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 12L2 9z" fill="#5ee7ff"/><path d="M2 9h20M9 3l-2 6 5 12M15 3l2 6-5 12" stroke="#120a2a" stroke-width="1.2" fill="none"/></svg><span id="nom">GAME DIAMOND</span></div><a class="btn" href="#tienda">Recargar</a></div></header>
+<main class="w">
+<div class="hero"><div><h1>Diamantes para tu juego, sin complicaciones</h1><p>Elige tu juego y tu paquete, escribe tu ID y confirma tu pedido por WhatsApp. Nunca te pedimos tu contraseña.</p><a class="btn" href="#tienda">Ver paquetes</a></div>
+<div class="live"><div class="lh">Recargas en vivo<span>● en directo</span></div><div id="feed"></div></div></div>
+<section id="tienda"><h2>Elige tu juego</h2><div class="tabs" id="tabs"></div><div class="grid" id="grid"><div class="empty">Cargando…</div></div></section>
+<section><h2>Cómo comprar</h2><div class="steps"><div class="st"><i>1</i><b>Elige tu paquete</b><p>Selecciona el juego y la cantidad.</p></div><div class="st"><i>2</i><b>Envía tus datos</b><p>Escribe tu ID y abre el chat de WhatsApp.</p></div><div class="st"><i>3</i><b>Recibe tus diamantes</b><p>Pagas, los acreditamos y te avisamos.</p></div></div></section>
+</main>
+<footer><div class="w"><span id="pie"></span></div></footer>
+<dialog id="dlg"><h3 id="dt"></h3><div class="s" id="dp"></div><div id="dc"></div>
+<label>Tu nombre (se mostrará abreviado en recargas en vivo)</label><input id="cli" maxlength="40">
+<label>Método de pago</label><select id="pg"></select>
+<div class="acts"><button class="btn g" onclick="dlg.close()">Cancelar</button><button class="btn" id="go">Pedir por WhatsApp</button></div></dialog>
+
+<div id="adm" hidden><div class="w">
+<div id="login" class="box"><h1>Panel de administración</h1>
+<label>Correo</label><div class="row"><input id="em" type="email"></div>
+<label>Contraseña</label><div class="row"><input id="pw" type="password"><button class="pri" onclick="entrar()">Entrar</button></div></div>
+<div id="app" hidden>
+<div class="top"><h1>Panel · GAME DIAMOND</h1><button class="sm" onclick="salir()">Salir</button></div>
+<div class="tabs"><button data-t="ped" onclick="tab='ped';render()">Pedidos</button><button data-t="prod" onclick="tab='prod';render()">Productos</button><button data-t="aju" onclick="tab='aju';render()">Ajustes</button></div>
+<div id="v"></div></div></div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+/* ===== CONFIGURA AQUÍ (Supabase > Project Settings > API) ===== */
+window.CFG={url:"https://TU-PROYECTO.supabase.co",key:"TU_ANON_KEY"};
+/* La anon key es pública por diseño. NUNCA pongas aquí la service_role key ni la API key de Play Zone. */
+</script>
+<script>
+const $=s=>document.querySelector(s),dlg=$("#dlg");
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+const sb=supabase.createClient(CFG.url,CFG.key);
+let S={nombre:"GAME DIAMOND",whatsapp:"",pagos:[]},J=[],ji=0,pi=0,E=[],k=0;
+
+async function cargar(){
+  const [s,j]=await Promise.all([
+    sb.from("settings").select("*").eq("id",1).maybeSingle(),
+    sb.from("games").select("*,packages(*)").eq("activo",true).order("orden").order("created_at")]);
+  if(s.data)S=s.data;
+  if(j.error){$("#grid").innerHTML='<div class="empty">No se pudo cargar el catálogo. Revisa la configuración de Supabase (CFG) y que ejecutaste schema.sql.</div>';return}
+  J=(j.data||[]).map(g=>({...g,packages:(g.packages||[]).filter(p=>p.activo).sort((a,b)=>a.orden-b.orden)}));
+  document.title=S.nombre+" | Recargas de diamantes";$("#nom").textContent=S.nombre;
+  $("#pie").textContent="© "+new Date().getFullYear()+" "+S.nombre+". Todos los derechos reservados.";
+  tabs();
+}
+function tabs(){
+  $("#tabs").innerHTML=J.map((g,i)=>`<button class="tab${i===ji?" on":""}" onclick="ji=${i};tabs()">${esc(g.nombre)}</button>`).join("");
+  const g=J[ji];
+  $("#grid").innerHTML=g&&g.packages.length?g.packages.map((p,i)=>`<div class="pk"><b>${esc(p.nombre)}</b><span class="p">$${(+p.precio).toFixed(2)}</span><button class="btn" onclick="abrir(${i})">Comprar</button></div>`).join(""):'<div class="empty">Sin paquetes por ahora</div>';
+}
+function abrir(i){
+  pi=i;const g=J[ji],p=g.packages[i];
+  $("#dt").textContent=g.nombre+" · "+p.nombre;$("#dp").textContent="$"+(+p.precio).toFixed(2);
+  $("#dc").innerHTML=g.campos.map((c,n)=>`<label>${esc(c)}</label><input id="f${n}" maxlength="60">`).join("");
+  $("#pg").innerHTML=S.pagos.map(x=>`<option>${esc(x)}</option>`).join("");
+  dlg.showModal();
+}
+$("#go").onclick=async()=>{
+  const g=J[ji],p=g.packages[pi],datos={};
+  for(let n=0;n<g.campos.length;n++){const v=$("#f"+n).value.trim();if(!v)return alert("Completa todos los datos.");datos[g.campos[n]]=v}
+  const cli=$("#cli").value.trim(),pago=$("#pg").value,b=$("#go");
+  b.disabled=true;
+  const {data,error}=await sb.rpc("crear_pedido",{p_package:p.id,p_datos:datos,p_pago:pago,p_cliente:cli||null});
+  b.disabled=false;
+  if(error)return alert("No se pudo crear el pedido: "+error.message);
+  const txt=Object.entries(datos).map(([a,c])=>a+": "+c).join(", ");
+  const msg=`Hola, quiero ${p.nombre} de ${g.nombre} ($${(+p.precio).toFixed(2)}).\n${txt}\nPago: ${pago}\nPedido #${data}`;
+  window.open("https://wa.me/"+S.whatsapp+"?text="+encodeURIComponent(msg),"_blank");
+  dlg.close();
+};
+// Recargas en vivo: 2 a la vez
+function feed(){
+  const f=$("#feed");
+  if(!E.length){f.innerHTML='<div class="empty">Aquí aparecerán las recargas entregadas</div>';return}
+  const par=[E[k%E.length]];if(E.length>1)par.push(E[(k+1)%E.length]);
+  f.innerHTML=par.map(e=>`<div class="it"><div class="av">${esc((e.nombre||"?")[0]).toUpperCase()}</div><div class="t"><b>${esc(e.nombre)}</b><small>${esc(e.paquete)}</small></div><span class="ok">✓ Entregada</span></div>`).join("");
+  k+=2;
+}
+async function trae(){const {data}=await sb.rpc("recargas_recientes",{n:10});E=data||[];k=0;feed()}
+cargar();trae();
+setInterval(()=>{if(E.length>2)feed()},6000);
+setInterval(trae,60000);
+
+let tab="ped",F="todos";
+const q=async p=>{const r=await p;if(r.error)alert(r.error.message);return r};
+async function entrar(){
+  const {error}=await sb.auth.signInWithPassword({email:$("#em").value.trim(),password:$("#pw").value});
+  if(error)return alert("Correo o contraseña incorrectos");init();
+}
+$("#pw").addEventListener("keydown",e=>e.key==="Enter"&&entrar());
+async function init(){
+  const {data:{user}}=await sb.auth.getUser();if(!user)return;
+  const {data}=await sb.from("admins").select("user_id").eq("user_id",user.id);
+  if(!data||!data.length){alert("Esta cuenta no es administradora. Ejecuta el último paso de schema.sql.");await sb.auth.signOut();return}
+  $("#login").hidden=true;$("#app").hidden=false;render();
+}
+async function salir(){await sb.auth.signOut();location.hash="";location.reload()}
+async function render(){
+  document.querySelectorAll("#adm .tabs button").forEach(b=>b.classList.toggle("on",b.dataset.t===tab));
+  $("#v").innerHTML='<p class="mut">Cargando…</p>';
+  $("#v").innerHTML=await({ped:vPed,prod:vProd,aju:vAju})[tab]();
+}
+/* ---- Pedidos ---- */
+async function vPed(){
+  const {data=[]}=await sb.from("orders").select("*").order("created_at",{ascending:false}).limit(300);
+  const ent=data.filter(o=>o.estado==="entregado"),pen=data.filter(o=>o.estado==="pendiente");
+  const lista=F==="todos"?data:data.filter(o=>o.estado===F);
+  return `<div class="stats"><div class="stat"><b>${data.length}</b><span class="mut">pedidos</span></div><div class="stat"><b>${pen.length}</b><span class="mut">pendientes</span></div><div class="stat"><b>$${ent.reduce((s,o)=>s+ +o.precio,0).toFixed(2)}</b><span class="mut">vendido</span></div></div>
+  <div class="row"><select onchange="F=this.value;render()">${["todos","pendiente","pagado","entregado","cancelado"].map(x=>`<option ${x===F?"selected":""}>${x}</option>`).join("")}</select><button class="sm" onclick="render()">Actualizar</button></div>`+
+  (lista.length?lista.map(o=>`<div class="box"><b>#${esc(o.codigo)}</b> · ${esc(o.paquete)} · ${esc(o.juego)} · $${(+o.precio).toFixed(2)}
+  <div class="mut">${new Date(o.created_at).toLocaleString("es")} · ${esc(o.cliente||"sin nombre")} · ${esc(o.pago)}<br>${Object.entries(o.datos||{}).map(([a,b])=>esc(a)+": <b>"+esc(b)+"</b>").join(" · ")}</div>
+  <div class="row"><select onchange="estado('${o.id}',this.value)">${["pendiente","pagado","entregado","cancelado"].map(x=>`<option ${x===o.estado?"selected":""}>${x}</option>`).join("")}</select></div></div>`).join(""):'<div class="box mut">No hay pedidos.</div>');
+}
+async function estado(id,v){await q(sb.from("orders").update({estado:v}).eq("id",id));render()}
+/* ---- Productos ---- */
+async function vProd(){
+  const {data=[]}=await sb.from("games").select("*,packages(*)").order("orden").order("created_at");
+  return data.map(g=>`<div class="box"><div class="row"><input value="${esc(g.nombre)}" onchange="updG('${g.id}','nombre',this.value)"><label style="margin:0">activo</label><input type="checkbox" ${g.activo?"checked":""} onchange="updG('${g.id}','activo',this.checked)"><button class="del" onclick="delG('${g.id}')">Borrar</button></div>
+  <div class="row"><input value="${esc(g.campos.join(", "))}" title="Datos que se piden al cliente, separados por coma" onchange="updG('${g.id}','campos',this.value.split(',').map(s=>s.trim()).filter(Boolean))"></div><div class="mut">↑ datos que se piden al cliente (separados por coma)</div>`+
+  (g.packages||[]).sort((a,b)=>a.orden-b.orden).map(p=>`<div class="row"><input value="${esc(p.nombre)}" onchange="updP('${p.id}','nombre',this.value)"><input type="number" step="0.01" style="max-width:90px" value="${p.precio}" onchange="updP('${p.id}','precio',+this.value)"><input type="checkbox" ${p.activo?"checked":""} onchange="updP('${p.id}','activo',this.checked)"><button class="del" onclick="delP('${p.id}')">✕</button></div>`).join("")+
+  `<button class="sm" onclick="addP('${g.id}')">+ Paquete</button></div>`).join("")+`<button class="pri" onclick="addG()">+ Juego</button>`;
+}
+const updG=(id,c,v)=>q(sb.from("games").update({[c]:v}).eq("id",id));
+const updP=(id,c,v)=>q(sb.from("packages").update({[c]:v}).eq("id",id));
+async function addG(){await q(sb.from("games").insert({nombre:"Nuevo juego"}));render()}
+async function addP(id){await q(sb.from("packages").insert({game_id:id,nombre:"Nuevo paquete",precio:1}));render()}
+async function delG(id){if(confirm("¿Borrar este juego y sus paquetes?")){await q(sb.from("games").delete().eq("id",id));render()}}
+async function delP(id){await q(sb.from("packages").delete().eq("id",id));render()}
+/* ---- Ajustes ---- */
+async function vAju(){
+  const {data:s}=await sb.from("settings").select("*").eq("id",1).single();if(!s)return'<div class="box mut">Sin ajustes</div>';
+  return `<div class="box"><label>Nombre de la web</label><input value="${esc(s.nombre)}" onchange="updS('nombre',this.value)">
+  <label>WhatsApp (código de país, sin +)</label><input value="${esc(s.whatsapp)}" onchange="updS('whatsapp',this.value)">
+  <label>Métodos de pago (separados por coma)</label><input value="${esc(s.pagos.join(", "))}" onchange="updS('pagos',this.value.split(',').map(x=>x.trim()).filter(Boolean))"></div>`;
+}
+const updS=(c,v)=>q(sb.from("settings").update({[c]:v}).eq("id",1));
+
+/* ---- Ruta: tu-web/#admin abre el panel ---- */
+function ruta(){const a=location.hash==="#admin";document.body.classList.toggle("isadm",a);$("#adm").hidden=!a;if(a)init()}
+addEventListener("hashchange",ruta);ruta();
+</script></body></html>
